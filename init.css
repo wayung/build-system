@@ -1,0 +1,50 @@
+.fr {
+  display: flex;
+  flex-direction: row;
+}
+form {
+  padding: 20px 20px 0;
+  display: inline-block;
+  text-align: center;
+}
+form div {
+  margin-bottom: 15px;
+}
+div > span {
+  color: #606266;
+  display: inline-block;
+  width: 90px;
+  font-size: 20px;
+  text-align: left;
+}
+input {
+  height: 40px;
+  font-size: 18px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 5px;
+  width: 500px;
+}
+.footer {
+  margin-top: 20px;
+}
+button {
+  background: #67c23a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+button.reset {
+  background: #909399;
+  margin-right: 15px;
+}
+button img {
+  height: 17px;
+  margin-right: 5px;
+  vertical-align: bottom;
+  display: none;
+}

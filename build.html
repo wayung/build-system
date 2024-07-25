@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多线程发布系统</title>
+  <script src="./jquery.min.js"></script>
+  <script src="vh.toast.min.js"></script>
+  <script src="axios.min.js"></script>
+  <script src="./ansi_up.js"></script>
+  <link rel="stylesheet" href="./base.css">
+</head>
+<body>
+  <div class="fr nav">
+    <div class="fr nav-left">
+      <h2>多线程发布系统</h2>
+      <span class="selected-all">全选</span>
+      <span class="reset">重置</span>
+    </div>
+    <header class="fr">
+      <span name="test">测试</span>
+      <span name="test2">测试2</span>
+      <span name="test3">测试3</span>
+    </header>
+    <div class="fr">
+      <span class="dev-btn" onclick="release()">批量发布</span>
+    </div>
+  </div>
+  <div class="container fr"></div>
+  <script>
+    let flag = false
+    // 发布按钮是否点击过
+    let isClick = false
+
+    // 全选
+    $('.selected-all').click(function() {
+      let cName = $(this).attr('class')
+      if (cName.includes('active')) {
+        $(this).removeClass('active')
+        reset()
+      } else {
+        $(this).addClass('active')
+        selectedAll()
+      }
+    })
+    // 重置
+    function reset() {
+      $('header span').each(function() {
+        $(this).removeClass('active')
+      })
+    }
+    // 全选所有环境
+    function selectedAll() {
+      $('header span').each(function() {
+        $(this).addClass('active')
+      })
+    }
+    // 重置
+    $('.reset').click(function() {
+      $('.selected-all').removeClass('active')
+      reset()
+    })
+
+    $('header span').click(function() {
+      if (isClick) {
+        $vh.warning('正在发布中...')
+        return
+      }
+      let cName = $(this).attr('class')
+      if (cName !== 'active') {
+        $(this).addClass('active')
+      } else {
+        $(this).removeClass('active')
+      }
+    })
+
+    // 输出日志
+    let preLog = []
+    const outputLog = (con, val, idx) => {
+      var ansi_up = new AnsiUp();
+
+      var html = ansi_up.ansi_to_html(val);
+      let imgElem = con.querySelector('img')
+      con.innerHTML = html
+      con.appendChild(imgElem)
+
+      if (preLog[idx] == val) {
+        imgElem.style.display = 'inline-block'
+      } else {
+        imgElem.style.display = 'none'
+      }
+      preLog[idx] = val
+    }
+    
+    // 自动置顶
+    const putTop = (con) => {
+      con.scrollTop = con.scrollHeight
+    }
+
+    const handleRelease = (names) => {
+      if (isClick) {
+        $vh.warning('正在发布中...')
+        return true
+      }
+      isClick = true
+
+      let conElem = document.querySelector('.container')
+      conElem.innerHTML = ''
+      names.forEach(v => {
+        let preElem = document.createElement('pre')
+        // 创建图片
+        let imgElem = document.createElement('img')
+        imgElem.src = './loading.gif'
+
+        // 添加图片
+        preElem.appendChild(imgElem)
+        conElem.appendChild(preElem)
+      })
+
+      flag = false
+      let pres = conElem.querySelectorAll('pre')
+      let interval = setInterval(() => {
+        names.forEach((v, idx) => {
+          axios.get(`./build${idx + 1}.txt`).then(res => {
+            outputLog(pres[idx], res.data, idx)
+            putTop(pres[idx])
+
+            if (flag) {
+              isClick = false
+              clearInterval(interval)
+              // 隐藏所有loading
+              document.querySelectorAll('img').forEach(v => v.style.display = 'none')
+            }
+          })
+        })
+      }, 100)
+    }
+
+    // 发布测试环境
+    const release = async () => {
+      let names = getNames()
+
+      if (handleRelease(names)) {
+        return
+      }
+      
+      let qs = JSON.stringify(names)
+      axios.get(`http://192.168.1.207/release?names=${qs}`).then(({status, data}) => {
+        if (status === 200) {
+          flag = true
+        }
+      })
+    }
+    // 获取所有选中的平台
+    const getNames = () => {
+      let list = []
+      $('header span.active').each(function() {
+        list.push($(this).attr('name'))
+      })
+      return list
+    }
+  </script>
+</body>
+</html>

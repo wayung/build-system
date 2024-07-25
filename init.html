@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>初始化项目</title>
+  <script src="./jquery.min.js"></script>
+  <script src="vh.toast.min.js"></script>
+  <script src="axios.min.js"></script>
+  <link rel="stylesheet" href="init.css">
+</head>
+<body>
+  <form onsubmit="return false;">
+    <div>
+      <span>目录：</span>
+      <input type="text" class="dir">
+    </div>
+    <div>
+      <span>git地址：</span>
+      <input type="text" class="git">
+    </div>
+    <div class="footer">
+      <button class="reset">重置</button>
+      <button class="init"><img src="./loading.gif" />初始化</button>
+    </div>
+  </form>
+  <script>
+    let isClick = false
+
+    // 重置
+    $('.reset').click(function() {
+      let inputElems = document.querySelectorAll('input')
+      inputElems.forEach(v => v.value = '')
+    })
+    // 初始化
+    $('.init').click(function() {
+      let dir = document.querySelector('.dir').value
+      let git = document.querySelector('.git').value
+
+      if (!dir || !git) {
+        return
+      }
+      if (isClick) {
+        $vh.warning('请勿重复点击！')
+        return
+      }
+      
+      isClick = true
+      document.querySelector('.init img').style.display = 'inline-block'
+      axios.get(`http://192.168.1.207/init?dir=${dir}&git=${git}`).then(res => {
+        $vh.success(res.data)
+        isClick = false
+        document.querySelector('.init img').style.display = 'none'
+      })
+    })
+  </script>
+</body>
+</html>
