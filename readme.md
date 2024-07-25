@@ -15,7 +15,7 @@ node index.js
 ```
 
 ## 配置项目
-- 使用浏览器访问：http://localhost/init.html
+- 使用浏览器访问：localhost/init.html
 ![](screenshot/init.png)
 - 填写目录和git地址
 - 等待安装依赖
@@ -25,7 +25,7 @@ node index.js
 ## 部署
 * 打开 build.html 文件，找到 header 里面的 span 标签，将 name 替换成上面设置的目录
 * 打开 work.js 文件，分别更改 BASE_OBJ 和 PROJECT_OBJ 两处的配置文件，PROJECT_OBJ的键名既是上面设置的目录
-* 使用浏览器访问：http://localhost，选择对应的项目，点击批量发布
+* 使用浏览器访问：localhost，选择对应的项目，点击批量发布
 ![](screenshot/build.png)
 
 ## 补充
